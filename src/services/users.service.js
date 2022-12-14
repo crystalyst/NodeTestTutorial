@@ -20,7 +20,6 @@ class UsersService {
     if (!findUser) throw new Error("Users doesn't exist");
     else if (findUser) {
       if (findUser.password === password) {
-        console.log(findUser)
         const token = jwt.sign({ userId: findUser.userId }, process.env.SECRET, {
           expiresIn: 60 * 60 * 60,
         });

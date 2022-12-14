@@ -5,12 +5,16 @@ module.exports = (req, res, next) => {
 
   
   const { authorization } = req.cookies;
+
+  console.log(req.cookies)
   
   const [authType, authToken] = (authorization || "").split("%");
-  console.log(authToken)
+
   try{
-  if (authToken && authType === "Bearer") {    
-    const { userId } = jwt.verify(authToken, process.env.SECRET);
+  if (authToken && authType === "Bearer") {
+   
+    const { userId } =jwt.verify(authToken, process.env.SECRET);
+
     User.findByPk(userId).then((user) => {
       if(user){
         console.log(user)
