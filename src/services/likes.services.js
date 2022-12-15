@@ -1,54 +1,51 @@
-const LikesRepository = require("../repositories/likes.repositories");
-const PostsRepository = require("../repositories/posts.repository");
+const LikesRepository = require('../repositories/likes.repositories');
+const PostsRepository = require('../repositories/posts.repository');
+const { Posts, Likes } = require('../models/index.js');
 
 class LikesService {
-  constructor() {
-    (this.likesRepository = new LikesRepository()),
-    (this.postsRepository = new PostsRepository());
-  }
-
-  updateLike = async (Id, userId) => {
-    const post = await this.postsRepository.findOnePost(Id);
-    if (post.length === 0) throw new Error("Post doesn't exist");
-
-    const like = await this.likesRepository.findLike(Id, userId);
-
-    if(!like){
-      await this.likesRepository.createLike(Id, userId);
-    } else if(like) {
-      await this.likesRepository.deleteLike(Id, userId);
+    constructor() {
+        (this.likesRepository = new LikesRepository(Likes)),
+            (this.postsRepository = new PostsRepository(Posts));
     }
 
-    return like
-  };
+    updateLike = async (Id, userId) => {
+        const post = await this.postsRepository.findOnePost(Id);
+        if (post.length === 0) throw new Error("Post doesn't exist");
 
-  findLike = async (userId) => {
-    const like = await this.likesRepository.findLikes(userId);
-  
-    console.log(like)
+        const like = await this.likesRepository.findLike(Id, userId);
 
-    const result = await Promise.all(
-      like.map(async (posts) => {
-        const {postId, userId, createdAt} = posts
-        const count = await this.likesRepository.countLike(postId)
+        if (!like) {
+            await this.likesRepository.createLike(Id, userId);
+        } else if (like) {
+            await this.likesRepository.deleteLike(Id, userId);
+        }
 
-        return {
-          postId: postId,
-          userId: userId,
-          nickname: posts.User.nickname,
-          title: posts.Post.title,
-          createdAt: createdAt,
-          like: count,
-        };
-      })
-    );
+        return like;
+    };
 
-    let data =result.sort(function (a, b) {
-      return b.like - a.like;
-    });
-    return data
+    findLike = async (userId) => {
+        const like = await this.likesRepository.findLikes(userId);
+        const result = await Promise.all(
+            like.map(async (posts) => {
+                const { postId, userId, createdAt } = posts;
+                const count = await this.likesRepository.countLike(postId);
+                const findPost = await this.postsRepository.findOnePost(postId);
+                return {
+                    postId: postId,
+                    userId: posts.Post.userId,
+                    nickname: findPost[0].User.nickname,
+                    title: posts.Post.title,
+                    createdAt: createdAt,
+                    like: count,
+                };
+            })
+        );
 
-  }
+        let data = result.sort(function (a, b) {
+            return b.like - a.like;
+        });
+        return data;
+    };
 }
 
 module.exports = LikesService;

@@ -1,54 +1,58 @@
-const { Posts, Likes, User } = require("../models");
-const { Op } = require("sequelize");
+const { User } = require('../models');
+const { Op } = require('sequelize');
+
 class PostsRepository {
-  findAllPosts = async () => {
-    return Posts.findAll({
-      include: [
-        {
-          model: User,
-          attributes: ["nickname"],
-        },
-      ],
-      order: [["updatedAt", "desc"]],
-    });
-  };
+    constructor(postsModel) {
+        this.posts = postsModel;
+    }
 
-  findOnePost = async (Id) => {
-    return Posts.findAll({
-      where: {
-        [Op.or]: [{ postId: Id }],
-      },
-      include: [
-        {
-          model: User,
-          attributes: ["nickname"],
-        },
-      ],
-    });
-  };
+    findAllPosts = async () => {
+        return this.posts.findAll({
+            include: [
+                {
+                    model: User,
+                    attributes: ['nickname'],
+                },
+            ],
+            order: [['updatedAt', 'desc']],
+        });
+    };
 
-  createPost = async (data) => {
-    await Posts.create({
-      title: data.title,
-      content: data.content,
-      userId: data.userId,
-      nickname: data.nickname,
-    });
-  };
+    findOnePost = async (Id) => {
+        return this.posts.findAll({
+            where: {
+                [Op.or]: [{ postId: Id }],
+            },
+            include: [
+                {
+                    model: User,
+                    attributes: ['nickname'],
+                },
+            ],
+        });
+    };
 
-  updatePost = async (Id, title, content) => {
-    const post = await Posts.update(
-      { title, content },
-      { where: { postId: Id } }
-    );
-    return post;
-  };
+    createPost = async (data) => {
+        await this.posts.create({
+            title: data.title,
+            content: data.content,
+            userId: data.userId,
+            nickname: data.nickname,
+        });
+    };
 
-  deletePost = async (Id) => {
-    await Posts.destroy({
-      where: { postId: Id },
-    });
-  };
+    updatePost = async (Id, title, content) => {
+        return await this.posts.update(
+            { title, content },
+            { where: { postId: Id } }
+        );
+    };
+
+    deletePost = async (Id) => {
+        await this.posts.destroy({
+            where: { postId: Id },
+        });
+    };
 }
 
 module.exports = PostsRepository;

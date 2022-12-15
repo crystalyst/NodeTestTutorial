@@ -1,45 +1,48 @@
-const { Op } = require("sequelize");
-const { Posts, Likes, User } = require("../models");
+const { Op } = require('sequelize');
+const { Posts, User } = require('../models');
 class LikesRepository {
-  findLike = async (Id, userId) => {
-    return Likes.findOne({
-      where: {
-        [Op.and]: [{ postId: Id }, { userId }],
-      },
-    });
-  };
+    constructor(likesModel) {
+        this.likes = likesModel;
+    }
+    findLike = async (Id, userId) => {
+        return this.likes.findOne({
+            where: {
+                [Op.and]: [{ postId: Id }, { userId }],
+            },
+        });
+    };
 
-  findLikes = async (userId) => {
-    return Likes.findAll({
-      where: {
-        [Op.or]: [{ userId }],
-      },
-      include: [Posts, User],
-    });
-  };
+    findLikes = async (userId) => {
+        return this.likes.findAll({
+            where: {
+                [Op.or]: [{ userId }],
+            },
+            include: [Posts],
+        });
+    };
 
-  createLike = async (Id, userId) => {
-    return Likes.create({
-      postId: Id,
-      userId: userId,
-    });
-  };
+    createLike = async (Id, userId) => {
+        return this.likes.create({
+            postId: Id,
+            userId: userId,
+        });
+    };
 
-  deleteLike = async (Id, userId) => {
-    console.log(Id, userId);
-    return Likes.destroy({
-      where: {
-        [Op.and]: [{ postId: Id }, { userId: userId }],
-      },
-    });
-  };
-  countLike = async (postId) => {
-    return  Likes.count({
-      where: {
-        [Op.or]: [{postId}],
-      },
-    });
-  }
+    deleteLike = async (Id, userId) => {
+        console.log(Id, userId);
+        return this.likes.destroy({
+            where: {
+                [Op.and]: [{ postId: Id }, { userId: userId }],
+            },
+        });
+    };
+    countLike = async (postId) => {
+        return this.likes.count({
+            where: {
+                [Op.or]: [{ postId }],
+            },
+        });
+    };
 }
 
 module.exports = LikesRepository;
