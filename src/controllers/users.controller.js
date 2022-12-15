@@ -36,7 +36,6 @@ class UsersController {
 
             res.status(201).json({ message: '회원 가입에 성공하였습니다.' });
         } catch (error) {
-            console.log(error);
             res.status(400).json({
                 errorMessage: error.message,
             });
@@ -50,14 +49,12 @@ class UsersController {
             if (!nickname || !password) throw new Error('InvalidParamsError');
 
             const token = await this.usersService.login(nickname, password);
-            console.log(token);
 
             return res
                 .cookie('authorization', 'Bearer%' + token)
                 .status(201)
                 .json({ token: token });
         } catch (error) {
-            console.log(error);
             return res.status(400).json({ errorMessage: error.message });
         }
     };

@@ -13,7 +13,6 @@ class PostsController {
                 data: posts,
             });
         } catch (error) {
-            console.log(error);
             res.status(400).json({
                 errorMessage: '게시글 조회에 실패하였습니다.',
             });
@@ -28,7 +27,6 @@ class PostsController {
 
             res.status(200).json({ data: post });
         } catch (error) {
-            console.log(error);
             res.status(400).json({
                 errorMessage: '게시글 조회에 실패하였습니다.',
             });
@@ -75,7 +73,6 @@ class PostsController {
                 .status(201)
                 .json({ message: '게시물을 수정하였습니다.' });
         } catch (error) {
-            console.log(error);
             res.status(400).json({
                 errorMessage: error.message,
             });
@@ -93,7 +90,6 @@ class PostsController {
 
             res.json({ message: '게시물을 삭제하였습니다.' });
         } catch (error) {
-            console.log(error);
             res.status(400).json({
                 errorMessage: error.message,
             });

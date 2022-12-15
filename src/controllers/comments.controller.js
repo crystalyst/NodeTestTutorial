@@ -20,7 +20,6 @@ class CommentsController {
 
             res.status(201).json({ message: '댓글이 생성되었습니다.' });
         } catch (error) {
-            console.log(error);
             res.status(400).json({
                 errorMessage: '댓글 작성에 실패하였습니다.',
             });
@@ -35,7 +34,6 @@ class CommentsController {
 
             res.json({ data: comments });
         } catch (error) {
-            console.log(error);
             res.status(400).json({
                 errorMessage: error.message,
             });
@@ -60,7 +58,6 @@ class CommentsController {
             );
             res.json({ message: '댓글을 수정하였습니다.' });
         } catch (error) {
-            console.log(error);
             res.status(400).json({
                 errorMessage: error.message,
             });
@@ -78,7 +75,6 @@ class CommentsController {
 
             res.status(200).json({ message: '댓글이 삭제되었습니다.' });
         } catch (error) {
-            console.log(error);
             res.status(400).json({
                 errorMessage: '댓글 삭제에 실패하였습니다.',
             });

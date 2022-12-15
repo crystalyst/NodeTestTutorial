@@ -29,7 +29,6 @@ class LikesRepository {
     };
 
     deleteLike = async (Id, userId) => {
-        console.log(Id, userId);
         return this.likes.destroy({
             where: {
                 [Op.and]: [{ postId: Id }, { userId: userId }],
