@@ -8,12 +8,6 @@ class PostsController {
     findAllPosts = async (req, res, next) => {
         try {
             const posts = await this.postsService.findAllPosts();
-            console.log(posts);
-            if (!posts) {
-                return res
-                    .status(400)
-                    .json({ message: '글을 먼저 작성해주세요!' });
-            }
 
             res.json({
                 data: posts,
@@ -31,12 +25,6 @@ class PostsController {
             const { Id } = req.params;
 
             const post = await this.postsService.findOnePost(Id);
-
-            if (post.length === 0) {
-                return res
-                    .status(400)
-                    .json({ message: '존재하지않는 게시물입니다.' });
-            }
 
             res.status(200).json({ data: post });
         } catch (error) {
@@ -99,21 +87,15 @@ class PostsController {
             const { Id } = req.params;
             const { userId } = res.locals.user;
 
-            const post = await this.postsService.findOnePost(Id);
+            if (!Id || !userId) throw new Error('InvalidParamsError');
 
-            if (userId !== post[0].userId) {
-                return res
-                    .status(412)
-                    .json({ errorMessage: '권한이 없습니다.' });
-            }
-
-            await this.postsService.deletePost(Id);
+            await this.postsService.deletePost(Id, userId);
 
             res.json({ message: '게시물을 삭제하였습니다.' });
         } catch (error) {
             console.log(error);
             res.status(400).json({
-                errorMessage: '게시글 삭제에 실패하였습니다.',
+                errorMessage: error.message,
             });
         }
     };

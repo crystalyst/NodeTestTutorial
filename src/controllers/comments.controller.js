@@ -5,26 +5,17 @@ class CommentsController {
         this.commentsService = new CommentsService();
     }
 
-    createComment = async (req, res, next) => {
+    createComment = async (req, res) => {
         try {
             const { Id } = req.params;
             const { content } = req.body;
             const { userId, nickname } = res.locals.user;
 
             if (!content || !userId || !Id || !nickname) {
-                return res
-                    .status(412)
-                    .json({
-                        errorMessage: '데이터의 형식이 올바르지 않습니다..',
-                    });
+                return res.status(412).json({
+                    errorMessage: '데이터의 형식이 올바르지 않습니다..',
+                });
             }
-
-            if (!content) {
-                return res
-                    .status(400)
-                    .json({ message: '댓글 내용을 입력해주세요' });
-            }
-
             await this.commentsService.createComment(content, Id, userId);
 
             res.status(201).json({ message: '댓글이 생성되었습니다.' });
@@ -44,8 +35,9 @@ class CommentsController {
 
             res.json({ data: comments });
         } catch (error) {
+            console.log(error);
             res.status(400).json({
-                errorMessage: '댓글 작성에 실패하였습니다.',
+                errorMessage: error.message,
             });
         }
     };
@@ -56,28 +48,21 @@ class CommentsController {
             const { content } = req.body;
             const { userId } = res.locals.user;
 
-            if (!content) {
+            if (!content || !commentId || !userId) {
                 return res
                     .status(412)
                     .json({ errorMessage: '데이터 형식이 올바르지 않습니다.' });
             }
-
-            const comments = await this.commentsService.updateComment(
-                commentId
+            await this.commentsService.updateComment(
+                commentId,
+                content,
+                userId
             );
-
-            if (userId !== comments.userId) {
-                return res
-                    .status(412)
-                    .json({ errorMessage: '권한이 없습니다.' });
-            }
-            await this.commentsService.updateComment(commentId, content);
-
             res.json({ message: '댓글을 수정하였습니다.' });
         } catch (error) {
             console.log(error);
             res.status(400).json({
-                errorMessage: '댓글 수정에 실패하였습니다.',
+                errorMessage: error.message,
             });
         }
     };
@@ -87,15 +72,10 @@ class CommentsController {
             const { commentId } = req.params;
             const { userId } = res.locals.user;
 
-            const comment = await this.commentsService.deleteComment(commentId);
+            if (!commentId || !userId) throw new Error('InvalidParamsError');
 
-            if (userId === comment.userId) {
-                return res
-                    .status(412)
-                    .json({ errorMessage: '권한이 없습니다.' });
-            } else {
-                await this.commentsService.deleteComment(commentId);
-            }
+            await this.commentsService.deleteComment(commentId, userId);
+
             res.status(200).json({ message: '댓글이 삭제되었습니다.' });
         } catch (error) {
             console.log(error);

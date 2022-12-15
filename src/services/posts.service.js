@@ -62,7 +62,7 @@ class PostsService {
     };
 
     createPost = async (title, content, userId, nickname) => {
-        await this.postsRepository.createPost({
+        return await this.postsRepository.createPost({
             title,
             content,
             userId,
@@ -79,13 +79,12 @@ class PostsService {
         return await this.postsRepository.updatePost(Id, title, content);
     };
 
-    deletePost = async (Id) => {
+    deletePost = async (Id, userId) => {
         const post = await this.postsRepository.findOnePost(Id);
         if (post.length === 0) throw new Error("Post doesn't exist");
-
-        await this.postsRepository.deletePost(Id);
-
-        return post;
+        else if (userId !== post[0].userId)
+            throw new Error("You don't have permission");
+        return await this.postsRepository.deletePost(Id);
     };
 }
 

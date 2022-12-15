@@ -47,7 +47,10 @@ class UsersController {
         try {
             const { nickname, password } = req.body;
 
+            if (!nickname || !password) throw new Error('InvalidParamsError');
+
             const token = await this.usersService.login(nickname, password);
+            console.log(token);
 
             return res
                 .cookie('authorization', 'Bearer%' + token)
@@ -55,9 +58,7 @@ class UsersController {
                 .json({ token: token });
         } catch (error) {
             console.log(error);
-            return res
-                .status(400)
-                .json({ errorMessage: error.message });
+            return res.status(400).json({ errorMessage: error.message });
         }
     };
 }

@@ -74,7 +74,7 @@ describe('signup의 통합 테스트', () => {
             errorMessage: 'Nickname already exists',
         });
     });
-    test('POST /api/users/signup passwordError ', async () => {
+    test('POST /api/users/signup confirmPasswordError ', async () => {
         const requestBody = {
             nickname: 'nickname',
             password: '1234',
@@ -147,7 +147,7 @@ describe('login의 통합 테스트', () => {
 
         expect(response.status).toEqual(400);
         expect(response.body).toEqual({
-            errorMessage: "Users doesn't exist",
+            errorMessage: 'nickname or password do not match',
         });
     });
 });

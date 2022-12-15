@@ -17,7 +17,7 @@ class LikesRepository {
             where: {
                 [Op.or]: [{ userId }],
             },
-            include: [Posts, User],
+            include: [Posts],
         });
     };
 

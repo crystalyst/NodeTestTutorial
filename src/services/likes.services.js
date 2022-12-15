@@ -25,18 +25,15 @@ class LikesService {
 
     findLike = async (userId) => {
         const like = await this.likesRepository.findLikes(userId);
-
-        console.log(like);
-
         const result = await Promise.all(
             like.map(async (posts) => {
                 const { postId, userId, createdAt } = posts;
                 const count = await this.likesRepository.countLike(postId);
-
+                const findPost = await this.postsRepository.findOnePost(postId);
                 return {
                     postId: postId,
-                    userId: userId,
-                    nickname: posts.User.nickname,
+                    userId: posts.Post.userId,
+                    nickname: findPost[0].User.nickname,
                     title: posts.Post.title,
                     createdAt: createdAt,
                     like: count,
